@@ -1,15 +1,7 @@
 package com.grupo7.studentsrepo.model.entity;
 
-import com.grupo7.studentsrepo.model.enums.CategoriaProyecto;
-import com.grupo7.studentsrepo.model.enums.EstadoProyecto;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -31,19 +23,18 @@ public class Proyecto extends BaseEntity {
     @Column(name = "descripcion", length = 1000)
     private String descripcion;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "categoria", nullable = false, length = 30)
-    private CategoriaProyecto categoria;
+    @Column(name = "area", nullable = false, length = 100)
+    private String area;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "estado", nullable = false, length = 20)
-    private EstadoProyecto estado = EstadoProyecto.PENDIENTE;
+    @Column(name = "estado", length = 50)
+    private String estado = "Pendiente";
 
-    @Column(name = "nombre_archivo", nullable = false, length = 255)
-    private String nombreArchivo;
+    @Column(name = "estudiante", length = 200)
+    private String estudiante;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "estudiante_id", nullable = false)
-    private Estudiante estudiante;
+    @Column(name = "fecha", length = 50)
+    private String fecha;
 
+    @Column(name = "archivo_url", length = 500)
+    private String archivoUrl;
 }
