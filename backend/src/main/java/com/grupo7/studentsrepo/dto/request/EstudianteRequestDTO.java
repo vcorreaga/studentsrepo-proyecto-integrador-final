@@ -16,5 +16,7 @@ public class EstudianteRequestDTO {
     private String apellidos;
     private String email;
     private String carrera;
+    private String username;
+    private String password;
 
 }

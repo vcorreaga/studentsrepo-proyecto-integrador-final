@@ -17,5 +17,7 @@ public class AdminResponseDTO {
     private String nombre;
 
     private String email;
+    private String username;
+    private String password;
 
 }

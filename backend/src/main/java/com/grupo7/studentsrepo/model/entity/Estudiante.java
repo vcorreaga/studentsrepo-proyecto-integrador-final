@@ -37,10 +37,20 @@ public class Estudiante extends BaseEntity {
             length = 120)
     private String carrera;
 
+    @Column(name = "username",
+            nullable = false,
+            unique = true,
+            length = 50)
+    private String username;
+
+    @Column(name = "password",
+            nullable = false,
+            length = 255)
+    private String password;
+
     @JsonIgnore
     @OneToMany(mappedBy = "estudiante",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<Proyecto> proyectos = new ArrayList<>();
-
 }

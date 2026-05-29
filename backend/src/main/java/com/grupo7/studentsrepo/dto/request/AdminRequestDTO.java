@@ -15,5 +15,7 @@ public class AdminRequestDTO {
     private String nombre;
 
     private String email;
+    private String username;
+    private String password;
 
 }

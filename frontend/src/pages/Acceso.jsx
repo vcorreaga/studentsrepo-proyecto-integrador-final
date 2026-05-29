@@ -1,46 +1,63 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Link } from "react-router-dom"
-import { puntos_finales } from "../services/api"
 import { alertaRedireccion } from "../helpers/alertas"
-import Header from "../components/Encabezado"
-import Footer from "../components/PiePagina"
+import Encabezado from "../components/Encabezado"
+import PiePagina from "../components/PiePagina"
 import imagenFondo from "../assets/images/marca.png"
 
 function Acceso() {
   const [nombreUsuario, setNombreUsuario] = useState("")
   const [contrasena, setContrasena] = useState("")
-  const [usuarios, setUsuarios] = useState([])
+  const [cargando, setCargando] = useState(false)
 
-  function obtenerUsuarios() {
-    fetch(puntos_finales.usuarios)
-      .then((res) => res.json())
-      .then((datos) => setUsuarios(datos))
-      .catch((err) => console.log(err))
-  }
-
-  useEffect(() => { obtenerUsuarios() }, [])
-
-  function encontrarUsuario() {
-    return usuarios.find(
-      (item) => nombreUsuario === item.username && contrasena === item.password
-    )
-  }
-
-  function iniciarSesion(e) {
+  const iniciarSesion = async (e) => {
     e.preventDefault()
-    if (!nombreUsuario || !contrasena)
-      return alertaRedireccion("Campos vacíos", "Completa usuario y contraseña", "/acceso", "warning")
-    if (encontrarUsuario()) {
-      localStorage.setItem("usuario", JSON.stringify(encontrarUsuario()))
-      return alertaRedireccion("Bienvenido", "Serás redireccionado al panel", "/panel", "success")
+    if (!nombreUsuario || !contrasena) {
+      alertaRedireccion("Campos vacíos", "Completa usuario y contraseña", "/acceso", "warning")
+      return
     }
-    return alertaRedireccion("Error", "Usuario o contraseña incorrectos", "/acceso", "error")
+
+    setCargando(true)
+
+    try {
+      // Buscar en admins
+      const resAdmins = await fetch("https://studentsrepo-backend.onrender.com/api/admins")
+      const admins = await resAdmins.json()
+      const adminEncontrado = admins.find(
+        a => a.username === nombreUsuario && a.password === contrasena
+      )
+
+      if (adminEncontrado) {
+        localStorage.setItem("usuario", JSON.stringify({ ...adminEncontrado, role: "admin" }))
+        alertaRedireccion("Bienvenido", `Hola ${adminEncontrado.nombre || adminEncontrado.username}`, "/panel", "success")
+        return
+      }
+
+      // Buscar en estudiantes
+      const resEstudiantes = await fetch("https://studentsrepo-backend.onrender.com/api/estudiantes")
+      const estudiantes = await resEstudiantes.json()
+      const estudianteEncontrado = estudiantes.find(
+        e => e.username === nombreUsuario && e.password === contrasena
+      )
+
+      if (estudianteEncontrado) {
+        localStorage.setItem("usuario", JSON.stringify({ ...estudianteEncontrado, role: "estudiante" }))
+        alertaRedireccion("Bienvenido", `Hola ${estudianteEncontrado.nombre || estudianteEncontrado.username}`, "/panel", "success")
+        return
+      }
+
+      alertaRedireccion("Error", "Usuario o contraseña incorrectos", "/acceso", "error")
+
+    } catch {
+      alertaRedireccion("Error", "No se pudo conectar con el servidor", "/acceso", "error")
+    } finally {
+      setCargando(false)
+    }
   }
 
   return (
     <div className="app">
-      <Header />
-
+      <Encabezado />
       <main className="form-login-container" style={{
         backgroundImage: `url(${imagenFondo})`,
         backgroundSize: 'cover',
@@ -61,12 +78,13 @@ function Acceso() {
               placeholder="Contraseña"
               onChange={(e) => setContrasena(e.target.value)}
             />
-            <button type="submit" className="login-btn">Acceder</button>
+            <button type="submit" className="login-btn" disabled={cargando}>
+              {cargando ? "Verificando..." : "Acceder"}
+            </button>
           </form>
         </div>
       </main>
-
-      <Footer />
+      <PiePagina />
     </div>
   )
 }

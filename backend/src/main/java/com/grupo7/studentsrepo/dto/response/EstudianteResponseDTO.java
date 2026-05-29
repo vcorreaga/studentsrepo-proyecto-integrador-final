@@ -19,5 +19,7 @@ public class EstudianteResponseDTO {
 
     private String email;
     private String carrera;
+    private String username;
+    private String password;
 
 }

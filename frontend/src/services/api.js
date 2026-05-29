@@ -1,6 +1,6 @@
 const URL_BASE = "https://studentsrepo-backend.onrender.com"
 
 export const puntos_finales = {
-  usuarios: `${URL_BASE}/api/usuarios`,
+  estudiantes: `${URL_BASE}/api/estudiantes`,
   proyectos: `${URL_BASE}/api/proyectos`,
 }
